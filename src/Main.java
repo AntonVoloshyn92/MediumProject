@@ -1,81 +1,60 @@
+package homeWorks.homeWork6;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
-        int[] mass = new int[5];
+        int[] mass = new int[(int) (Math.random() * 100)];
 
         for (int i = 0; i < mass.length; i++) {
-            mass[i] = (int) (Math.random() * 50);
+            mass[i] = (int) (Math.random() * 100);
         }
 
-        System.out.println("Show massive");
-        for (int a : mass) {
-            System.out.println(a);
-        }
-        System.out.println("\n");
-//
-//        BubbleSort bubbleSost = new BubbleSort();
-//
-        int[] sorted;
+        long[][] massResalt = new long[4][7];
 
+        Class classMassives = MassFilling.class;
+        Class classResf     = Sort.class;
 
-        Class clas = Main.class;
+        Method[] sortMethods    = classResf.getDeclaredMethods();
+        Method[] fillingMethods = classMassives.getDeclaredMethods();
 
-        Method[] method = clas.getDeclaredMethods();
+        List<Method> annotatedSortMethod  = new ArrayList<>();
+        List<Method> annotatedFillMethods = new ArrayList<>();
 
-        for (Method md : method) {
-            if (md.isAnnotationPresent(Marker.class)) {
-                System.out.println(md.getName());
-                md.invoke(clas.newInstance(), mass.clone());
+        for (Method sortMethod : sortMethods) {
+            if (sortMethod.isAnnotationPresent(sorted.class)) {
+                annotatedSortMethod.add(sortMethod);
             }
         }
-    }
 
-    private static void mainMethod() throws IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
-        Class clas = Main.class;
-
-        Method[] method = clas.getDeclaredMethods();
-        System.out.println("length = " + method.length);
-        for (Method md : method) {
-            if (md.isAnnotationPresent(Marker.class)) {
-                System.out.println(md.getName());
-                md.invoke(clas.newInstance());
+        for (Method fillingMethod : fillingMethods) {
+            if (fillingMethod.isAnnotationPresent(filled.class)) {
+                annotatedFillMethods.add(fillingMethod);
             }
         }
-    }
 
-    @Marker
-    private void bubbleSortFloat(int[] mass) {
-        int[] a = new BubbleSort().sortFloat(mass);
-        for(int i : a) {
-            System.out.println(i);
+        for (int i = 0; i < annotatedFillMethods.size(); i++) {
+            int[] progressMass = (int[]) annotatedFillMethods.get(i).invoke(classMassives.newInstance(), mass.clone());
+            massResalt[i][0] = progressMass.length;
+
+            for (int j = 0; j < annotatedSortMethod.size(); j++) {
+                long timeSort = (long) annotatedSortMethod.get(j).invoke(classResf.newInstance(), progressMass);
+                massResalt[i][j + 1] = timeSort;
+
+            }
+        }
+
+        for (long[] vekror1 : massResalt) {
+            for (long vektor2 : vekror1) {
+                System.out.print(vektor2 + " ");
+            }
+            System.out.println();
         }
     }
-
-    @Marker
-    private void bubbleSortSink(int[] mass) {
-        int[] a = new BubbleSort().sortSink(mass);
-        for(int i : a) {
-            System.out.println(i);
-        }
-    }
-
-    @Marker
-    private int[] method2(int[] mass) {
-        System.out.println(2);
-        return null;
-    }
-
-    @Marker
-    private int[] method3(int[] mass) {
-        System.out.println(3);
-        return null;
-    }
-
-//    @Target(value= ElementType.METHOD)
-//    @Retention(value= RetentionPolicy.RUNTIME)
-//    public @interface Marker {
-//    }
 }
+
+
